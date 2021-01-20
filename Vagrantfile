@@ -151,6 +151,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           echo
           git clone https://github.com/CesarBallardini/clip-itk
           cd clip-itk/
+          git checkout fix-make-deb  # rama de trabajo hasta que pueda construir los .deb
 
           echo
           echo '########################### Compila clip'
