@@ -34,6 +34,7 @@ La VM tiene ahora solamente clip binarios, stos paara compilar los `.prg`, pero 
 
 ## Instrucciones de compilación manual
 
+
 ```bash
 # Requisitos de clip en Debian 10
 sudo apt-get install -y flex bison libc6-dev libncurses5-dev libpth-dev libmariadbclient-dev gcc-multilib libc6-i386 build-essential git 
@@ -53,6 +54,8 @@ Para verificar que funciona:
 ```bash
 clip -V
 ```
+
+Gracias Gustavo Courault por mantener la pasión clippera!
 
 # Referencias
 
