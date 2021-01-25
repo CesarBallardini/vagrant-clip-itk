@@ -10,7 +10,7 @@ compilar programas `.prg`.
 # construye la imagen
 time docker build -t cesarballardini/clip-itk:latest .
 
-
+# ejecuta un contenedor desde esa imagen
 docker run -it --name devtest --mount type=bind,source="$(pwd)",target=/root/app cesarballardini/clip-itk:latest /bin/bash
 docker start devtest 
 docker attach  devtest 
@@ -26,11 +26,6 @@ Dentro del contenedor:
 
 ```bash
 export LANG=es_ES.CP850
-
-cd DIRECTORIO_SUPER_LIBS/
-make clean
-make all
-make install
 
 cd DIRECTORIO_APLICACION/
 make clean

@@ -40,13 +40,21 @@ RUN apt-get install ${APT_OPTIONS} \
 RUN apt-get install ${APT_OPTIONS} -t stretch-backports \
           gcc-multilib build-essential debhelper libmariadbclient-dev
 
-########################### Clona repositorio'
+########################### Clona repositorio clip-itk
 WORKDIR /root/
-RUN git --version && lsb_release -a 
-#RUN git clone https://github.com/CesarBallardini/clip-it
 RUN git clone  https://github.com/CesarBallardini/clip-itk.git
 RUN cd clip-itk/ && git checkout fix-make-deb && make system && make tgz
 RUN ls -l /root/clip_distrib/1.2.0-0/
+
+########################### Clona repositorio superlib
+RUN git clone https://github.com/CesarBallardini/supfreec52.git
+RUN cd supfreec52/ \
+ && git checkout clip-itk \
+ && cd SOURCE/ \
+ && make clean \
+ && make \
+ && make install
+
 
 #
 # ------------------------------------------------------------------------
@@ -62,11 +70,14 @@ ENV APT_OPTIONS=' -y --allow-downgrades --allow-remove-essential --allow-change-
 ENV CLIPROOT=/usr/local/clip
 ENV LOCALEDIRS="$CLIPROOT/locale.pot $CLIPROOT/locale.po $CLIPROOT/locale.mo"
 ENV DISTRIB_DIR=/root/clip_distrib/1.2.0-0/tar-gz-Linux-x86_64-glibc2.24
+ENV SUPERLIB_DIR=/root/supfreec52/SOURCE
 ENV LANG=en_EN.CP437
 
 RUN mkdir /root/app
 WORKDIR /root/app
 COPY --from=builder ${DISTRIB_DIR} .
+COPY --from=builder ${SUPERLIB_DIR}/libsuper.so .
+COPY --from=builder ${SUPERLIB_DIR}/libsuper.a .
 
 RUN groupadd clip ; mkdir -p $LOCALEDIRS ; chgrp -R clip $LOCALEDIRS ; chmod -R g+w $LOCALEDIRS
 
@@ -93,7 +104,7 @@ RUN apt-get update -y -qq \
 RUN apt-get install ${APT_OPTIONS} make gcc-multilib libc6-i386 build-essential \
                    libc6-dev libgpm-dev libncurses5-dev libpth-dev libmariadbclient-dev
 
-RUN ls -l /root/app/
+RUN ls -l /root/app
 
 RUN tar xzf /root/app/clip-com_1.2.0-0.tar.gz        -C / && \
     tar xzf /root/app/clip-dev_1.2.0-0.tar.gz        -C / && \
@@ -105,6 +116,12 @@ RUN tar xzf /root/app/clip-com_1.2.0-0.tar.gz        -C / && \
     tar xzf /root/app/clip-r2d2_1.2.0-0.tar.gz       -C / && \
     tar xzf /root/app/clip-rtf_1.2.0-0.tar.gz        -C / && \
     tar xzf /root/app/clip-xml_1.2.0-0.tar.gz        -C /
+
+RUN cp /root/app/libsuper.so ${CLIPROOT}/lib/libsuper.so   \
+ && cp /root/app/libsuper.a  ${CLIPROOT}/lib/libsuper.a    \
+ && ln -s ${CLIPROOT}/lib/libsuper.a  /usr/lib/libsuper.a  \
+ && ln -s ${CLIPROOT}/lib/libsuper.so /usr/lib/libsuper.so
+
 
 RUN rm -f /root/app/* ; echo "/usr/local/clip/lib" | tee  /etc/ld.so.conf.d/clip.conf ; ldconfig ; clip -V
 CMD ["/bin/bash"]  
