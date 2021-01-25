@@ -29,13 +29,16 @@ Desarrollo de aplicacines en Clipper xBase
 1. Compilar Clip-ITK
 
 vagrant up
+vagrant reload
 vagrant provision --provision-with compila_clip
+vagrant provision --provision-with compila_superlib
 
 2. Instala Clip
 
 Primero compilar clip como en el caso anterior, luego
 vagrant destroy -y
 vagrant up
+vagrant reload
 vagrant provision --provision-with instala_clip
 
 ------------------------------------------------------
@@ -118,7 +121,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           sudo -E apt-get --purge remove apt-listchanges -y > /dev/null 2>&1
           sudo -E apt-get update -y -qq > /dev/null 2>&1
           sudo dpkg-reconfigure --frontend=noninteractive libc6 > /dev/null 2>&1
-          sudo -E apt-get install linux-image-amd64 ${APT_OPTIONS}  || true
           sudo -E apt-get upgrade ${APT_OPTIONS} > /dev/null 2>&1
           sudo -E apt-get dist-upgrade ${APT_OPTIONS} > /dev/null 2>&1
           sudo -E apt-get autoremove -y > /dev/null 2>&1
@@ -176,8 +178,32 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           echo '########################### Genera tgz'
           echo
           sudo make tgz
-          rsync -Pav clip_distrib /vagrant/
+          rsync -Pav ~/clip_distrib /vagrant/
 
+
+        SHELL
+    end
+
+    config.vm.provision "compila_superlib", type: "shell", keep_color: true, run: "never" do |s|
+        s.privileged = false
+        s.inline = <<-SHELL
+
+          echo
+          echo '########################### Clona repositorio'
+          echo
+          git clone https://github.com/CesarBallardini/supfreec52.git
+          cd  supfreec52/
+          git checkout clip-itk
+          cd SOURCE/
+
+          echo
+          echo '########################### Compila clip'
+          echo
+          sudo make clean
+          sudo make
+          sudo make install
+
+          cp libsuper.a libsuper.so /vagrant/tmp
 
         SHELL
     end
@@ -197,10 +223,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           cd $(dirname $(find /vagrant/clip_distrib/ -name install.sh))
 
           CLIPROOT=/usr/local/clip
-          COMPRESS_PRG='gzip'
-          UNCOMPRESS_PRG='gzip -d'
-
-          root=/
 
           [ ! -x /usr/sbin/groupadd ] || /usr/sbin/groupadd clip >/dev/null 2>&1 || true
 
@@ -209,19 +231,30 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           chgrp -R clip $LOCALEDIRS 2>/dev/null || true
           chmod -R g+w $LOCALEDIRS || true
 
-          tar xzf clip-com_1.2.0-0.tar.gz        -C $root/
-          tar xzf clip-dev_1.2.0-0.tar.gz        -C $root/
-          tar xzf clip-gzip_1.2.0-0.tar.gz       -C $root/
-          tar xzf clip-lib_1.2.0-0.tar.gz        -C $root/
-          tar xzf clip-oasis_1.2.0-0.tar.gz      -C $root/
-          tar xzf clip-postscript_1.2.0-0.tar.gz -C $root/
-          tar xzf clip-prg_1.2.0-0.tar.gz        -C $root/
-          tar xzf clip-r2d2_1.2.0-0.tar.gz       -C $root/
-          tar xzf clip-rtf_1.2.0-0.tar.gz        -C $root/
-          tar xzf clip-xml_1.2.0-0.tar.gz        -C $root/
+          tar xzf clip-com_1.2.0-0.tar.gz        -C /
+          tar xzf clip-dev_1.2.0-0.tar.gz        -C /
+          tar xzf clip-gzip_1.2.0-0.tar.gz       -C /
+          tar xzf clip-lib_1.2.0-0.tar.gz        -C /
+          tar xzf clip-oasis_1.2.0-0.tar.gz      -C /
+          tar xzf clip-postscript_1.2.0-0.tar.gz -C /
+          tar xzf clip-prg_1.2.0-0.tar.gz        -C /
+          tar xzf clip-r2d2_1.2.0-0.tar.gz       -C /
+          tar xzf clip-rtf_1.2.0-0.tar.gz        -C /
+          tar xzf clip-xml_1.2.0-0.tar.gz        -C /
+
+          echo
+          echo 'instala Superlib'
+          echo
+          
+	  sudo cp /vagrant/tmp/libsuper.so ${CLIPROOT}/lib/libsuper.so
+	  sudo cp /vagrant/tmp/libsuper.a  ${CLIPROOT}/lib/libsuper.a
+	  sudo ln -s ${CLIPROOT}/lib/libsuper.a /usr/lib/libsuper.a
+	  sudo ln -s ${CLIPROOT}/lib/libsuper.so /usr/lib/libsuper.so
 
           echo "/usr/local/clip/lib" | sudo tee  /etc/ld.so.conf.d/clip.conf
           sudo ldconfig
+
+
 
 
         SHELL

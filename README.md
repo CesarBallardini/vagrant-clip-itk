@@ -8,21 +8,25 @@ Compilador de lenguaje Clip, basado en Clipper y de la familia de xBase.
 
 ```bash
 time vagrant up
+time vagrant reload
 time vagrant provision --provision-with compila_clip
+time vagrant provision --provision-with compila_superlib
 ```
 
 Con `vagrant ssh` se puede ingresar a la VM y trabajar en el entorno clip.
 
 
 
-## Instrucciones para instalar clip, desde distro tgz
+## Instrucciones para instalar clip+Superlib, desde distro tgz
 
 ```bash
 # compila clip y genera el tgz
 time vagrant up
+time vagrant reload
 time vagrant provision --provision-with compila_clip
+time vagrant provision --provision-with compila_superlib
 
-# obtiene una nueva VM, y le instala los binarios desde el tgz
+# obtiene una nueva VM, y le instala los binarios desde el tgz + Superlib
 vagrant destroy -f
 time vagrant up
 time vagrant provision --provision-with instala_clip
