@@ -28,7 +28,7 @@ time vagrant up
 time vagrant provision --provision-with instala_clip
 ```
 
-La VM tiene ahora solamente clip binarios, stos paara compilar los `.prg`, pero no todo el entorno de desarrollo para compilarel propio  clip.
+La VM tiene ahora solamente clip binarios, listos paara compilar los `.prg`, pero no todo el entorno de desarrollo para compilar el propio  clip.
 
 
 
@@ -79,3 +79,4 @@ Gracias Gustavo Courault por mantener la pasión clippera!
 * http://www.xharbour.org/ xHarbour is a 100% practically backward compatible Clipper Language compiler and Pre-Processor. xHarbour can be compiled with the most popular C compilers and is available for Windows, Linux, DOS, OS/2, Mac OS X, FreeBSD and including the full source code. If you are not interested in xHarbour's source code or don't want to compile xHarbour by yourself, get the pre-compiled binaries from the download page.
 
 * http://www.fship.com/ FlagShip (privative software)
+
