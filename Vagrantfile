@@ -25,6 +25,19 @@ $post_up_message = <<POST_UP_MESSAGE
 CLIP ITK
 
 Desarrollo de aplicacines en Clipper xBase
+
+1. Compilar Clip-ITK
+
+vagrant up
+vagrant provision --provision-with compila_clip
+
+2. Instala Clip
+
+Primero compilar clip como en el caso anterior, luego
+vagrant destroy -y
+vagrant up
+vagrant provision --provision-with instala_clip
+
 ------------------------------------------------------
 POST_UP_MESSAGE
 
@@ -59,7 +72,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
  config.vm.define HOSTNAME do |srv|
 
     srv.vm.box = "ubuntu/focal64"
-    #srv.vm.box = "debian/buster64"
     srv.vm.network "private_network", ip: "192.168.33.11"
 
     srv.vm.boot_timeout = 3600
@@ -178,7 +190,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           export APT_OPTIONS=' -y --allow-downgrades --allow-remove-essential --allow-change-held-packages -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold '
 
           echo
-          echo 'requisitos para cmpilar .prg con clip'
+          echo 'requisitos para compilar .prg con clip'
           echo
           sudo apt-get install ${APT_OPTIONS} libc6-dev libgpm-dev libncurses5-dev libpth-dev libmariadbclient-dev
           
