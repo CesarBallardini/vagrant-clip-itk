@@ -11,11 +11,13 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV APT_LISTCHANGES_FRONTEND=none
 ENV APT_OPTIONS=' -y --allow-downgrades --allow-remove-essential --allow-change-held-packages -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold '
 
+########################### Fuentes de paquetes en archive
+RUN echo 'deb http://archive.debian.org/debian/ stretch main contrib non-free' |  tee /etc/apt/sources.list
+RUN echo 'deb http://archive.debian.org/debian/ stretch-proposed-updates main contrib non-free' |  tee --append /etc/apt/sources.list
+RUN echo 'deb http://archive.debian.org/debian-security stretch/updates main contrib non-free' |  tee --append /etc/apt/sources.list
+
 ########################### Requisitos de clip
-RUN echo 'deb http://deb.debian.org/debian stretch-backports main contrib non-free' > /etc/apt/sources.list.d/backports.list
-RUN { \
-  echo 'deb http://deb.debian.org/debian stretch main contrib non-free' ; \
-   } > /etc/apt/sources.list
+RUN echo 'deb http://archive.debian.org/debian stretch-backports main contrib non-free' > /etc/apt/sources.list.d/backports.list
 
 RUN echo "Acquire::Check-Valid-Until false;" | tee --append /etc/apt/apt.conf
 
@@ -81,12 +83,13 @@ COPY --from=builder ${SUPERLIB_DIR}/libsuper.a .
 
 RUN groupadd clip ; mkdir -p $LOCALEDIRS ; chgrp -R clip $LOCALEDIRS ; chmod -R g+w $LOCALEDIRS
 
-########################### Requisitos de clip
-RUN echo 'deb http://deb.debian.org/debian stretch-backports main contrib non-free' > /etc/apt/sources.list.d/backports.list
-RUN { \
-  echo 'deb http://deb.debian.org/debian stretch main contrib non-free' ; \
-   } > /etc/apt/sources.list
+########################### Fuentes de paquetes en archive
+RUN echo 'deb http://archive.debian.org/debian/ stretch main contrib non-free' |  tee /etc/apt/sources.list
+RUN echo 'deb http://archive.debian.org/debian/ stretch-proposed-updates main contrib non-free' |  tee --append /etc/apt/sources.list
+RUN echo 'deb http://archive.debian.org/debian-security stretch/updates main contrib non-free' |  tee --append /etc/apt/sources.list
 
+########################### Requisitos de clip
+RUN echo 'deb http://archive.debian.org/debian stretch-backports main contrib non-free' > /etc/apt/sources.list.d/backports.list
 RUN echo "Acquire::Check-Valid-Until false;" | tee --append /etc/apt/apt.conf
 
 RUN apt-get update -y -qq \
